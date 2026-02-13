@@ -1,3 +1,9 @@
+import AST.Stmt;
+import Interpreter.Interpreter;
+import Lexer.Lexer;
+import Lexer.Token;
+import Parser.Parser;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +19,7 @@ public class Main {
             // Datei komplett als String laden
             String source = Files.readString(Path.of("src/test.txt"));
 
-            // Lexer aufrufen
+            // Lexer.Lexer aufrufen
             Lexer lexer = new Lexer();
             List<Token> tokens = lexer.disassembleString(source);
 
@@ -21,6 +27,16 @@ public class Main {
             for (Token t : tokens) {
                 System.out.println(t);
             }
+
+            Parser parser = new Parser(tokens);
+            List<Stmt> stmts = parser.parse();
+
+            for(int i = 0; i < stmts.size(); i ++){
+             System.out.println(stmts.get(i));
+            }
+
+            Interpreter interpreter = new Interpreter();
+            interpreter.execute(stmts);
 
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());

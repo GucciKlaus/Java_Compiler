@@ -1,6 +1,8 @@
+package Lexer;
+
 public class Token {
-    TokenType type;
-    String content;
+    public TokenType type;
+    public String content;
 
 
     public Token(TokenType type, String content) {
