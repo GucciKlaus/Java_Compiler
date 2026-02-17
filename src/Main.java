@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+Heart of the Project, reads a file, compiles it and starts it
+ */
 public class Main {
 
     public static void main(String[] args) {
@@ -16,26 +19,23 @@ public class Main {
         try {
             System.out.println("Starting processing file...");
 
-            // Datei komplett als String laden
             String source = Files.readString(Path.of("src/test.txt"));
 
-            // Lexer.Lexer aufrufen
+            // Lexer calling
             Lexer lexer = new Lexer();
             List<Token> tokens = lexer.disassembleString(source);
 
-            // Tokens ausgeben
+            // Token printer
             for (Token t : tokens) {
                 System.out.println(t);
             }
 
             Parser parser = new Parser(tokens);
+            //Parser starting
             List<Stmt> stmts = parser.parse();
 
-            for(int i = 0; i < stmts.size(); i ++){
-             System.out.println(stmts.get(i));
-            }
-
             Interpreter interpreter = new Interpreter();
+            //Interpreter starting
             interpreter.execute(stmts);
 
         } catch (IOException e) {

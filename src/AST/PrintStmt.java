@@ -1,5 +1,10 @@
 package AST;
 
+
+/**
+ * Represents a print statement in the syntax tree (AST)
+ * Eveluates an expression and outputs the result
+ */
 public class PrintStmt implements Stmt {
     public final Expr expression;
 
@@ -7,9 +12,9 @@ public class PrintStmt implements Stmt {
         this.expression = expression;
     }
 
-    @Override
-    public String toString() {
-        return expression.toString();
-    }
+//    @Override
+//    public String toString() {
+//        return expression.toString();
+//    }
 }
 
