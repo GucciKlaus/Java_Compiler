@@ -116,7 +116,7 @@ public class Lexer {
 
         } else {
             switch (c) {
-                case '=' -> tokens.add(new Token(TokenType.EQUAL, "="));
+                case '=' -> tokens.add(new Token(TokenType.ASSIGN, "="));
                 case '>' -> tokens.add(new Token(TokenType.BIGGER, ">"));
                 case '<' -> tokens.add(new Token(TokenType.SMALLER, "<"));
                 case '!' -> tokens.add(new Token(TokenType.BANG, "!"));

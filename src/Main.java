@@ -1,4 +1,4 @@
-import AST.Stmt;
+import AST.STMT.Stmt;
 import Interpreter.Interpreter;
 import Lexer.Lexer;
 import Lexer.Token;

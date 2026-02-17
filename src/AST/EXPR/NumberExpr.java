@@ -1,4 +1,4 @@
-package AST;
+package AST.EXPR;
 
 /**
  * Represents a numeric literal in the syntax tree (AST)

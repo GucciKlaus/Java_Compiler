@@ -1,10 +1,13 @@
 package Parser;
 
-import AST.BinaryExpr;
-import AST.Expr;
-import AST.NumberExpr;
-import AST.PrintStmt;
-import AST.Stmt;
+import AST.EXPR.BinaryExpr;
+import AST.EXPR.Expr;
+import AST.EXPR.NumberExpr;
+import AST.EXPR.VariableExpr;
+import AST.STMT.AssignStmt;
+import AST.STMT.PrintStmt;
+import AST.STMT.Stmt;
+import AST.STMT.VarDeclStmt;
 import Lexer.Token;
 import Lexer.TokenType;
 import java.util.ArrayList;
@@ -41,8 +44,13 @@ public class Parser {
     private Stmt statement(){
         if (match(TokenType.PRINT)){
             return printStatement();
+        }else if(match(TokenType.INT)) {
+             return varDeclStatement();
+        }else if(check(TokenType.IDENTIFIER) && checkNext(TokenType.ASSIGN))
+        {
+          return assignStatement();
         }else{
-            throw new RuntimeException("Exepcted statement, got " + peek().type);
+                throw new RuntimeException("Expected statement, got " + peek().type);
         }
     }
 
@@ -63,6 +71,38 @@ public class Parser {
     }
 
     /**
+     * Decleration of a variable
+     * @return a stmt to declare a variable
+     */
+    private Stmt varDeclStatement() {
+        Token nameTok = consume(TokenType.IDENTIFIER, "Expected variable name after 'int'");
+        Expr init = null;
+
+        if (match(TokenType.ASSIGN)) {
+            init = expression();
+        }
+
+        consume(TokenType.SEMICOLON, "Expected ';' after variable declaration");
+        return new VarDeclStmt(nameTok.content, init);
+    }
+
+    /**
+     * Assign a value to a declared variable
+     * @return the assign stmt
+     */
+    private Stmt assignStatement() {
+        Token nameTok = consume(TokenType.IDENTIFIER, "Expected variable name");
+        consume(TokenType.ASSIGN, "Expected '=' after variable name");
+
+        Expr value = expression();
+        consume(TokenType.SEMICOLON, "Expected ';' after assignment");
+
+        return new AssignStmt(nameTok.content, value);
+    }
+
+
+
+    /**
      * Manages + and -, with left priority, calls term, to check for higher level operators
      * @return a full Expression or the left part
      */
@@ -79,7 +119,7 @@ public class Parser {
     }
 
     /**
-     * Manages the higher level operatores * and /
+     * Manages the higher level operators * and /
      * @return a full expression or the left part
      */
     private Expr term() {
@@ -98,9 +138,9 @@ public class Parser {
      * Checks which content comes next, return the number expression or a normal expression
      */
     private Expr primary() {
-        if (match(TokenType.NUMBER)) {
-            return new NumberExpr(Integer.parseInt(previous().content));
-        }
+        if (match(TokenType.NUMBER)) return new NumberExpr(Integer.parseInt(previous().content));
+
+        if (match(TokenType.IDENTIFIER)) return new VariableExpr(previous().content);
 
         if (match(TokenType.LPAREN)) {
             Expr expr = expression();
@@ -110,6 +150,7 @@ public class Parser {
 
         throw new RuntimeException("Expected expression, got: " + peek().type);
     }
+
 
 
     /**
@@ -147,6 +188,17 @@ public class Parser {
         if (isAtEnd()) return false;
         return peek().type == type;
     }
+
+    /**
+     * Checks if the next token is our specific type
+     * @param type the actual type
+     * @return boolean
+     */
+    private boolean checkNext(TokenType type) {
+            if (current + 1 >= tokens.size()) return false;
+            return tokens.get(current + 1).type == type;
+        }
+
 
     /**
      * Move +1 previous

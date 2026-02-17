@@ -1,17 +1,27 @@
 package Interpreter;
 
-import AST.*;
-import Lexer.TokenType;
+import AST.EXPR.BinaryExpr;
+import AST.EXPR.Expr;
+import AST.EXPR.NumberExpr;
+import AST.EXPR.VariableExpr;
+import AST.STMT.AssignStmt;
+import AST.STMT.PrintStmt;
+import AST.STMT.Stmt;
+import AST.STMT.VarDeclStmt;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Executes the syntax tree step after step (AST executer)
  */
 public class Interpreter {
+    private final Map<String, Integer> env = new HashMap<>();
 
     /**
-     * Goes trough a list of statements and executes them
+     * Goes through a list of statements and executes them
      * @param stmts
      */
     public void execute(List<Stmt> stmts) {
@@ -20,6 +30,21 @@ public class Interpreter {
             if (stmt instanceof PrintStmt ps) {
                 Object value = evaluate(ps.expression);
                 System.out.println(value);
+            }else if (stmt instanceof VarDeclStmt vd){
+                Object value = vd.initializer == null ? 0 : evaluate(vd.initializer);
+                if(env.containsKey(vd.name)){
+                    throw new RuntimeException("Variable already declared " + vd.name);
+                }
+                env.put(vd.name, (Integer) value);
+            }else if (stmt instanceof AssignStmt as){
+                if(!env.containsKey((as.name))){
+                    throw new RuntimeException("Keyname not there, Variable is not defined " + as.name);
+                }
+                Object value = evaluate(as.value);
+                env.put(as.name,(Integer) value);
+                continue;
+            }else{
+                throw new IllegalArgumentException("Statement not available now "+ stmt.getClass().getSimpleName());
             }
         }
     }
@@ -53,7 +78,13 @@ public class Interpreter {
                     return (int) left / (int) right;
                 }
             }
+        }else if (expr instanceof VariableExpr ve) {
+            if (!env.containsKey(ve.name)) {
+                throw new RuntimeException("Undefined variable: " + ve.name);
+            }
+            return env.get(ve.name);
         }
+
 
         throw new RuntimeException("Unknown expression");
     }
