@@ -6,10 +6,12 @@ package AST.EXPR;
  * Leaf node (no child expressions)
  */
 public class NumberExpr implements Expr {
-    public final int value;
+    public final double value;
+    public final boolean isInt;
 
-    public NumberExpr(int value) {
+    public NumberExpr(double value,boolean isInt) {
         this.value = value;
+        this.isInt = isInt;
     }
 
     @Override

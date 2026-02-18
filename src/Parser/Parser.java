@@ -2,6 +2,7 @@ package Parser;
 
 import AST.EXPR.*;
 import AST.STMT.*;
+import Interpreter.Types.IntValue;
 import Lexer.Token;
 import Lexer.TokenType;
 import java.util.ArrayList;
@@ -190,7 +191,11 @@ public class Parser {
      * Checks which content comes next, return the number expression or a normal expression
      */
     private Expr primary() {
-        if (match(TokenType.NUMBER)) return new NumberExpr(Integer.parseInt(previous().content));
+        if (match(TokenType.NUMBER)) {
+            String t = previous().content;
+            if (t.contains(".")) return new NumberExpr(Double.parseDouble(t),false);
+            return new NumberExpr(Integer.parseInt(t),true);
+        }
 
         if (match(TokenType.IDENTIFIER)) return new VariableExpr(previous().content);
 
