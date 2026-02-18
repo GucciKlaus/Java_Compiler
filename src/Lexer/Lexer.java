@@ -38,6 +38,9 @@ public class Lexer {
         switch (c) {
             case '(' -> { tokens.add(new Token(TokenType.LPAREN, "(")); move_Forward(); }
             case ')' -> { tokens.add(new Token(TokenType.RPAREN, ")")); move_Forward(); }
+            case '{' -> {tokens.add(new Token(TokenType.LBRACE,"{")); move_Forward();}
+            case '}' -> {tokens.add(new Token(TokenType.RBRACE,"}")); move_Forward();}
+            case '"' -> run_string_literal();
             case '+' -> { tokens.add(new Token(TokenType.PLUS, "+")); move_Forward(); }
             case '-' -> { tokens.add(new Token(TokenType.MINUS, "-")); move_Forward(); }
             case ';' -> { tokens.add(new Token(TokenType.SEMICOLON, ";")); move_Forward(); }
@@ -76,10 +79,35 @@ public class Lexer {
             case "int" -> TokenType.INT;
             case "string" -> TokenType.STRING;
             case "print" -> TokenType.PRINT;
+            case "true" -> TokenType.TRUE;
+            case "false" -> TokenType.FALSE;
+            case "if" -> TokenType.IF;
+            case "else" -> TokenType.ELSE;
             default -> TokenType.IDENTIFIER;
         };
 
         tokens.add(new Token(type, word));
+    }
+
+    /**
+     * Runs over a string which is starting with the double quote and adds it to the list
+     */
+    private void run_string_literal(){
+        StringBuilder sb = new StringBuilder();
+        move_Forward();
+
+        while(!isAtEnd() && peek() != '"'){
+            sb.append(peek());
+            move_Forward();
+        }
+
+        if(isAtEnd()){
+            throw new IllegalArgumentException("You maybe forgot to close your string");
+        }
+
+        move_Forward();
+
+        tokens.add(new Token(TokenType.STRING_LITERAL,sb.toString()));
     }
 
     /**
@@ -132,7 +160,7 @@ public class Lexer {
      */
     private boolean isOperator(char c){
         switch(c){
-            case '=', '+','-','!', '<', '>', '/','*':return true;
+            case '=','!', '<', '>', '/','*':return true;
             default:return false;
         }
     }

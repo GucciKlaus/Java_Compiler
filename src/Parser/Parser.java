@@ -1,17 +1,12 @@
 package Parser;
 
-import AST.EXPR.BinaryExpr;
-import AST.EXPR.Expr;
-import AST.EXPR.NumberExpr;
-import AST.EXPR.VariableExpr;
-import AST.STMT.AssignStmt;
-import AST.STMT.PrintStmt;
-import AST.STMT.Stmt;
-import AST.STMT.VarDeclStmt;
+import AST.EXPR.*;
+import AST.STMT.*;
 import Lexer.Token;
 import Lexer.TokenType;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Iterates over the token list and starts building the syntax tree
@@ -49,10 +44,34 @@ public class Parser {
         }else if(check(TokenType.IDENTIFIER) && checkNext(TokenType.ASSIGN))
         {
           return assignStatement();
+        }else if (match(TokenType.IF)){
+            return ifStatement();
         }else{
-                throw new RuntimeException("Expected statement, got " + peek().type);
+                throw new RuntimeException("Expected statement, got " + peek().type + " " + peek().content);
         }
     }
+
+    private Stmt ifStatement() {
+        consume(TokenType.LPAREN, "Expected '(' after if");
+        Expr condition = comparison();
+        consume(TokenType.RPAREN, "Expected ')' after condition");
+
+        BlockStmt thenBranch = blockStmt();
+
+        BlockStmt elseBranch = null;
+        if (match(TokenType.ELSE)) {
+            if (match(TokenType.IF)) {
+                elseBranch = new BlockStmt(List.of(ifStatement()));
+            } else {
+                elseBranch = blockStmt();
+            }
+        }
+
+        return new IfStmt(condition, thenBranch, elseBranch);
+    }
+
+
+
 
     /**
      * Expects a printStatement
@@ -71,7 +90,7 @@ public class Parser {
     }
 
     /**
-     * Decleration of a variable
+     * Declaration of a variable
      * @return a stmt to declare a variable
      */
     private Stmt varDeclStatement() {
@@ -100,6 +119,18 @@ public class Parser {
         return new AssignStmt(nameTok.content, value);
     }
 
+    private BlockStmt blockStmt(){
+        consume(TokenType.LBRACE,"Expected '{' for block begin");
+        List<Stmt> list = new ArrayList<>();
+
+        while (!check(TokenType.RBRACE) && !isAtEnd()) {
+            list.add(statement());
+        }
+
+        consume(TokenType.RBRACE,"Expected '}' at the end of the block");
+        return new BlockStmt(list);
+    }
+
 
 
     /**
@@ -107,16 +138,37 @@ public class Parser {
      * @return a full Expression or the left part
      */
     private Expr expression() {
-        Expr left = term();
+        return comparison();
+    }
 
-        while (match(TokenType.PLUS) || match(TokenType.MINUS)) {
-            Token operator = previous();
-            Expr right = term();
-            left = new BinaryExpr(left, operator, right);
+
+    private Expr comparison() {
+        Expr left = addition();
+
+        while (match(TokenType.EQUAL_EQUAL) || match(TokenType.NOT_EQUAL)
+                || match(TokenType.SMALLER) || match(TokenType.BIGGER)
+                || match(TokenType.ESMALLER) || match(TokenType.EBIGGER)) {
+
+            Token op = previous();
+            Expr right = addition();
+            left = new BinaryExpr(left, op, right);
         }
 
         return left;
     }
+
+    private Expr addition() {
+        Expr left = term();
+
+        while (match(TokenType.PLUS) || match(TokenType.MINUS)) {
+            Token op = previous();
+            Expr right = term();
+            left = new BinaryExpr(left, op, right);
+        }
+
+        return left;
+    }
+
 
     /**
      * Manages the higher level operators * and /
@@ -142,13 +194,15 @@ public class Parser {
 
         if (match(TokenType.IDENTIFIER)) return new VariableExpr(previous().content);
 
+        if(match(TokenType.STRING_LITERAL)) return new StringExpr(previous().content);
+
         if (match(TokenType.LPAREN)) {
             Expr expr = expression();
             consume(TokenType.RPAREN, "Expected ')' after expression");
             return expr;
         }
 
-        throw new RuntimeException("Expected expression, got: " + peek().type);
+        throw new RuntimeException("Expected expression, got: " + peek().type + ", " + peek().content);
     }
 
 
@@ -176,7 +230,7 @@ public class Parser {
      */
     private Token consume(TokenType type, String message) {
         if (check(type)) return advance();
-        throw new RuntimeException(message + " (got " + peek().type + ")");
+        throw new RuntimeException(message + " (got " + peek().type + ")" + ", " + peek().content);
     }
 
     /**

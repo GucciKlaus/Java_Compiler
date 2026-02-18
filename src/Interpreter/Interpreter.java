@@ -1,13 +1,7 @@
 package Interpreter;
 
-import AST.EXPR.BinaryExpr;
-import AST.EXPR.Expr;
-import AST.EXPR.NumberExpr;
-import AST.EXPR.VariableExpr;
-import AST.STMT.AssignStmt;
-import AST.STMT.PrintStmt;
-import AST.STMT.Stmt;
-import AST.STMT.VarDeclStmt;
+import AST.EXPR.*;
+import AST.STMT.*;
 
 
 import java.util.HashMap;
@@ -43,6 +37,13 @@ public class Interpreter {
                 Object value = evaluate(as.value);
                 env.put(as.name,(Integer) value);
                 continue;
+            }else if(stmt instanceof IfStmt is){
+                Object condition = evaluate(is.condition);
+                if((boolean) condition){
+                    execute(is.thenBranch.statements);
+                }else if (is.elseBranch!=null){
+                    execute(is.elseBranch.statements);
+                }
             }else{
                 throw new IllegalArgumentException("Statement not available now "+ stmt.getClass().getSimpleName());
             }
@@ -65,7 +66,10 @@ public class Interpreter {
 
             switch(be.operator.type){
                 case PLUS -> {
-                    return (int)left + (int)right;
+                    if (left instanceof Integer && right instanceof Integer)
+                        return (int) left + (int) right;
+                    if (left instanceof String || right instanceof String)
+                        return left.toString() + right.toString();
                 }
                 case MINUS -> {
                     return (int)left - (int) right;
@@ -77,16 +81,40 @@ public class Interpreter {
                 case DIV -> {
                     return (int) left / (int) right;
                 }
+                case BIGGER-> {
+                    return (int) left > (int) right;
+                }
+                case SMALLER-> {
+                    return (int) left < (int) right;
+                }
+
+                case EBIGGER-> {
+                    return (int) left >= (int) right;
+                }
+                case ESMALLER-> {
+                    return (int) left <= (int) right;
+                }
+                case EQUAL_EQUAL-> {
+                    return left.equals(right);
+                }
+                case NOT_EQUAL -> {
+                    return !left.equals(right);
+                }
             }
         }else if (expr instanceof VariableExpr ve) {
             if (!env.containsKey(ve.name)) {
                 throw new RuntimeException("Undefined variable: " + ve.name);
             }
             return env.get(ve.name);
+        }else if (expr instanceof StringExpr s) {
+            return s.value;
+        }else if (expr instanceof BooleanExpr b) {
+            return b.value;
         }
 
 
-        throw new RuntimeException("Unknown expression");
+
+        throw new RuntimeException("Unknown expression" + expr.toString());
     }
 }
 

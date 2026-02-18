@@ -33,6 +33,9 @@ public class Main {
             Parser parser = new Parser(tokens);
             //Parser starting
             List<Stmt> stmts = parser.parse();
+            for (Stmt p : stmts) {
+                System.out.println(p);
+            }
 
             Interpreter interpreter = new Interpreter();
             //Interpreter starting
