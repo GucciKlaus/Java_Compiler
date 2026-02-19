@@ -16,26 +16,34 @@ public class Main {
 
     public static void main(String[] args) {
 
+        if(args.length == 0) {
+            System.out.println("Usage: java Main <path-to-source-file>");
+            return;
+        }
+
+        String filePath = args[0];
+
+
         try {
             System.out.println("Starting processing file...");
 
-            String source = Files.readString(Path.of("src/test.txt"));
+            String source = Files.readString(Path.of(filePath));
 
             // Lexer calling
             Lexer lexer = new Lexer();
             List<Token> tokens = lexer.disassembleString(source);
 
-            // Token printer
-            for (Token t : tokens) {
-                System.out.println(t);
-            }
+//            // Token printer
+//            for (Token t : tokens) {
+//                System.out.println(t);
+//            }
 
             Parser parser = new Parser(tokens);
             //Parser starting
             List<Stmt> stmts = parser.parse();
-            for (Stmt p : stmts) {
-                System.out.println(p);
-            }
+//            for (Stmt p : stmts) {
+//                System.out.println(p);
+//            }
 
             Interpreter interpreter = new Interpreter();
             //Interpreter starting

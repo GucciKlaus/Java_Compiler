@@ -1,0 +1,207 @@
+// ===============================
+// FULLTEST - INT + DOUBLE + BRANCHING
+// ===============================
+
+// ===== BASIC PRINT =====
+print(1);
+
+// ===== PRECEDENCE =====
+print((1+2)+1);
+print(3/2+3);
+print(3*2+2);
+print(3-2*4);
+
+// ===== VARIABLES (int) =====
+int a = 2;
+print(a);
+
+a = a + 3;
+print(a);
+
+// ===== VARIABLE COPY =====
+int b = a;
+print(b);
+
+b = 5 + 4;
+print(b);
+
+// ===== IF ELSE TRUE =====
+if(b > a){
+    print("ja");
+}else{
+    print("nein");
+}
+
+// ===== IF ELSE FALSE =====
+if(a > b){
+    print("wrong");
+}else{
+    print("correct");
+}
+
+// ===== COMPLEX EXPRESSION (int) =====
+int c = (2 + 3) * 4 - 5 / 5;
+print(c);
+
+// ===== NESTED EXPRESSIONS =====
+print((1 + (2 * 3)) - (4 / 2));
+
+// ===== REASSIGNMENT CHAIN =====
+c = c + 1;
+c = c * 2;
+print(c);
+
+// ===============================
+// NESTED IF (else-branch forced)
+// ===============================
+int p = 1;
+int q = 9;
+
+if(p > q){
+    print("p>q outer true");
+}else{
+    print("p>q outer false");
+
+    if(q > 5){
+        print("q>5 inner true");
+    }else{
+        print("q>5 inner false");
+    }
+}
+
+// ===============================
+// ELSE-IF CHAIN
+// ===============================
+int grade = 73;
+
+if(grade > 90){
+    print("grade A");
+}else if(grade > 80){
+    print("grade B");
+}else if(grade > 70){
+    print("grade C");
+}else{
+    print("grade D");
+}
+
+// ===============================
+// DOUBLE BASICS
+// ===============================
+double d1 = 2.5;
+double d2 = 4.0;
+print(d1);
+print(d2);
+
+// double + double
+print(1.5 + 2.25);
+print(d1 + d2);
+
+// double - double
+print(10.0 - 3.5);
+
+// double * double
+print(2.0 * 3.5);
+
+// double / double
+print(7.5 / 2.5);
+
+// ===============================
+// MIXED: INT + DOUBLE
+// ===============================
+
+// int + double
+print(1 + 2.5);
+print(a + 2.5);
+
+// double + int
+print(2.5 + 1);
+print(d1 + a);
+
+// int - double
+print(10 - 2.5);
+
+// double - int
+print(10.5 - 2);
+
+// int * double
+print(3 * 2.5);
+
+// double * int
+print(2.5 * 3);
+
+// int / double
+print(3 / 2.0);
+print(b / 4.0);
+
+// double / int
+print(7.5 / 2);
+print(d2 / 2);
+
+// ===============================
+// COMPLEX EXPRESSIONS (double)
+// ===============================
+double d3 = (1 + 2.5) * 2.0;
+print(d3);
+
+double d4 = (10.0 / 4) + (3 * 2.5) - 1;
+print(d4);
+
+// ===============================
+// IFs WITH DOUBLES + MIXED
+// ===============================
+
+// compare double > int
+if(d1 > a){
+    print("d1>a true");
+}else{
+    print("d1>a false");
+}
+
+// compare int > double
+if(b > d2){
+    print("b>d2 true");
+}else{
+    print("b>d2 false");
+}
+
+// compare double expression
+if((1.5 + 2.25) > 3.0){
+    print("expr>3 true");
+}else{
+    print("expr>3 false");
+}
+
+// nested if chain with double
+double score = 73.5;
+
+if(score > 90.0){
+    print("score A");
+}else{
+    if(score > 80.0){
+        print("score B");
+    }else{
+        if(score > 70.0){
+            print("score C");
+        }else{
+            print("score D");
+        }
+    }
+}
+
+// ===============================
+// REASSIGNMENTS (int + double)
+// ===============================
+d1 = d1 + 1;
+print(d1);
+
+d1 = d1 + 0.5;
+print(d1);
+
+a = a + 3;
+print(a);
+
+// ===============================
+// FINAL MIXED PRINTS
+// ===============================
+print((a + 1) + (d1 + 2.0));
+print((d1 / 2) + (b / 4.0));

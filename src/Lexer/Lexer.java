@@ -43,6 +43,7 @@ public class Lexer {
             case '"' -> run_string_literal();
             case '+' -> { tokens.add(new Token(TokenType.PLUS, "+")); move_Forward(); }
             case '-' -> { tokens.add(new Token(TokenType.MINUS, "-")); move_Forward(); }
+            case '/' -> handleSlash();
             case ';' -> { tokens.add(new Token(TokenType.SEMICOLON, ";")); move_Forward(); }
 
             case ' ', '\t', '\r', '\n' -> move_Forward(); // whitespace skip
@@ -77,6 +78,7 @@ public class Lexer {
 
         TokenType type = switch (word) {
             case "int" -> TokenType.INT;
+            case "double" -> TokenType.DOUBLE;
             case "string" -> TokenType.STRING;
             case "print" -> TokenType.PRINT;
             case "true" -> TokenType.TRUE;
@@ -88,6 +90,19 @@ public class Lexer {
 
         tokens.add(new Token(type, word));
     }
+
+    private void handleSlash() {
+        move_Forward();
+
+        if (!isAtEnd() && peek() == '/') {
+            while (!isAtEnd() && peek() != '\n') {
+                move_Forward();
+            }
+        } else {
+            tokens.add(new Token(TokenType.DIV, "/"));
+        }
+    }
+
 
     /**
      * Runs over a string which is starting with the double quote and adds it to the list
@@ -119,6 +134,18 @@ public class Lexer {
         while (!isAtEnd() && Character.isDigit(peek())) {
             sb.append(peek());
             move_Forward();
+        }
+
+        if(!isAtEnd() && peek() == '.'){
+            if(runner +1 < data.length() && Character.isDigit(data.charAt(runner+1))){
+                sb.append('.');
+                move_Forward();
+
+                while (!isAtEnd() && Character.isDigit(peek())) {
+                    sb.append(peek());
+                    move_Forward();
+                }
+            }
         }
 
         tokens.add(new Token(TokenType.NUMBER, sb.toString()));

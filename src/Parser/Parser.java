@@ -42,6 +42,8 @@ public class Parser {
             return printStatement();
         }else if(match(TokenType.INT)) {
              return varDeclStatement();
+        }else if(match(TokenType.DOUBLE)){
+            return varDeclStatement();
         }else if(check(TokenType.IDENTIFIER) && checkNext(TokenType.ASSIGN))
         {
           return assignStatement();
@@ -54,7 +56,7 @@ public class Parser {
 
     private Stmt ifStatement() {
         consume(TokenType.LPAREN, "Expected '(' after if");
-        Expr condition = comparison();
+        Expr condition = expression();
         consume(TokenType.RPAREN, "Expected ')' after condition");
 
         BlockStmt thenBranch = blockStmt();

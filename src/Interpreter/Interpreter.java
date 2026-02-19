@@ -41,7 +41,12 @@ public class Interpreter {
                 continue;
             }else if(stmt instanceof IfStmt is){
                 Value condition = evaluate(is.condition);
-                if(condition instanceof  BoolValue){
+
+                if (!(condition instanceof BoolValue b)) {
+                    throw new RuntimeException("If condition must be boolean, got " + condition.getClass().getSimpleName());
+                }
+
+                if(condition instanceof  BoolValue bv && bv.value){
                     execute(is.thenBranch.statements);
                 }else if (is.elseBranch!=null){
                     execute(is.elseBranch.statements);
