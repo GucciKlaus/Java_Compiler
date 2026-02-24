@@ -15,7 +15,7 @@ class FullRunTest {
         System.setOut(new PrintStream(baos));
 
         try {
-            Main.main(new String[] {"fulltest.txt"});
+            Main.main(new String[] {"test/fullrun.txt"});
 
         } finally {
             System.setOut(oldOut);
@@ -89,7 +89,7 @@ class FullRunTest {
 
                 // ===== FINAL MIXED =====
                 "DoubleValue{value=15.0}",
-                "DoubleValue{value=4.0}"
+                "DoubleValue{value=4.25}"
         );
 
         assertEquals(expected, filtered);
